@@ -51,7 +51,23 @@ class Fabrik(object):
             self.types_prefix[typ['prefix']] = typ_id
 
     def fetch_applications(self):
-        self.applications = self.api.get('api/appl/?status=S')
+        self.applications = sorted(self.api.get('api/appl/?status=S'), key=lambda a: Fabrik.number_key(a['number']))
+
+    # http://stackoverflow.com/a/4287301/1509370
+    @staticmethod
+    def number_key(name):
+        import re
+        if name is None:
+            return None
+
+        parts = re.findall('[^0-9]+|[0-9]+', name)
+        sort_list = []
+        for part in parts:
+            try:
+                sort_list.append(int(part))
+            except ValueError:
+                sort_list.append(part)
+        return sort_list
 
 
 class VL(object):
